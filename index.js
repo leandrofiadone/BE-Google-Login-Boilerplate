@@ -7,6 +7,15 @@ const authRoutes = require('./routes/authRoutes');
 const PORT = process.env.PORT || 8080;
 
 app.use(cors());
+
+app.use(
+  cors({
+    origin:
+      "https://be-google-login-boilerplate.onrender.com/" ||
+      "http://localhost:3000",
+    credentials: true
+  })
+)
 app.use('/auth/', authRoutes); // <- NEW LINE
 
 app.all('*', (req, res, next) => {
