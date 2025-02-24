@@ -10,9 +10,8 @@ app.use(cors());
 
 app.use(
   cors({
-    origin:
-      "https://be-google-login-boilerplate.onrender.com/" ||
-      "http://localhost:3000",
+
+    origin: ['https://be-google-login-boilerplate.onrender.com/', 'http://localhost:5173'],
     credentials: true
   })
 )
