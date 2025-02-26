@@ -1,5 +1,6 @@
 const express = require("express")
 const cors = require("cors")
+const fetch = require("node-fetch") // Asegúrate de instalar esto con npm install node-fetch
 const app = express()
 require("dotenv").config()
 require("./models/dbConnect")
@@ -10,16 +11,28 @@ const PORT = process.env.PORT || 8080
 app.use(
   cors({
     origin: [
-      "https://googleloginboilerplate.vercel.app", // Asegúrate de incluir el dominio del frontend
+      "https://googleloginboilerplate.vercel.app",
       "http://localhost:5173"
     ],
-    credentials: true // Permite cookies y encabezados de autenticación
+    credentials: true
   })
 )
 
-app.use(express.json()) // Asegúrate de que Express pueda manejar JSON en el body
+app.use(express.json())
 
 app.use("/auth/", authRoutes)
+
+// Ruta para el ping
+app.get("/auth/ping", (req, res) => {
+  res.json({message: "Servidor activo"})
+})
+
+// Mantener el servidor despierto enviando un ping cada 10 minutos
+setInterval(() => {
+  fetch(`https://googleloginboilerplate.vercel.app/auth/ping`)
+    .then((res) => console.log(`SERVIDOR ACTIVO. Ping enviado: ${new Date().toISOString()}`))
+    .catch((err) => console.error("Error en el ping:", err))
+}, 600000) // 600000ms = 10 minutos
 
 // Manejo de rutas no encontradas
 app.all("*", (req, res) => {
