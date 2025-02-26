@@ -7,6 +7,8 @@ require("./models/dbConnect")
 const authRoutes = require("./routes/authRoutes")
 const PORT = process.env.PORT || 8080
 
+let totalPipelineMinutes = 0 // Variable global para acumular los minutos de ejecución
+
 // Configuración de CORS
 app.use(
   cors({
@@ -20,7 +22,32 @@ app.use(
 
 app.use(express.json())
 
+// Middleware para medir pipeline minutes
+app.use((req, res, next) => {
+  const start = process.hrtime() // Inicia el temporizador
+
+  res.on("finish", () => {
+    const elapsed = process.hrtime(start) // Obtiene el tiempo transcurrido
+    const elapsedMs = elapsed[0] * 1000 + elapsed[1] / 1e6 // Convierte a milisegundos
+    totalPipelineMinutes += elapsedMs / 60000 // Convierte a minutos y acumula
+
+    console.log(`⏳ Tiempo de ejecución: ${(elapsedMs / 1000).toFixed(2)}s`)
+    console.log(
+      `⏳ Pipeline Minutes Acumulados: ${totalPipelineMinutes.toFixed(2)} min`
+    )
+  })
+
+  next()
+})
+
 app.use("/auth/", authRoutes)
+
+// Ruta para obtener los pipeline minutes acumulados
+app.get("/auth/pipeline-minutes", (req, res) => {
+  res.json({
+    pipelineMinutes: totalPipelineMinutes.toFixed(2)
+  })
+})
 
 // Ruta para el ping
 app.get("/auth/ping", (req, res) => {
@@ -30,7 +57,7 @@ app.get("/auth/ping", (req, res) => {
 // Mantener el servidor despierto enviando un ping cada 10 minutos
 setInterval(() => {
   fetch(`https://be-google-login-boilerplate.onrender.com/auth/ping`)
-    .then((res) =>
+    .then(() =>
       console.log(`SERVIDOR ACTIVO. Ping enviado: ${new Date().toISOString()}`)
     )
     .catch((err) => console.error("Error en el ping:", err))
