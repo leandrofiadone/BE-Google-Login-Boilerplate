@@ -29,8 +29,10 @@ app.get("/auth/ping", (req, res) => {
 
 // Mantener el servidor despierto enviando un ping cada 10 minutos
 setInterval(() => {
-  fetch(`https://googleloginboilerplate.vercel.app/auth/ping`)
-    .then((res) => console.log(`SERVIDOR ACTIVO. Ping enviado: ${new Date().toISOString()}`))
+  fetch(`https://be-google-login-boilerplate.onrender.com/auth/ping`)
+    .then((res) =>
+      console.log(`SERVIDOR ACTIVO. Ping enviado: ${new Date().toISOString()}`)
+    )
     .catch((err) => console.error("Error en el ping:", err))
 }, 600000) // 600000ms = 10 minutos
 
