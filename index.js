@@ -6,19 +6,22 @@ require("./models/dbConnect")
 const authRoutes = require("./routes/authRoutes")
 const PORT = process.env.PORT || 8080
 
+// Configuración de CORS
 app.use(
   cors({
     origin: [
-      "https://be-google-login-boilerplate.onrender.com",
+      "https://googleloginboilerplate.vercel.app", // Asegúrate de incluir el dominio del frontend
       "http://localhost:5173"
     ],
-    credentials: true
+    credentials: true // Permite cookies y encabezados de autenticación
   })
 )
 
+app.use(express.json()) // Asegúrate de que Express pueda manejar JSON en el body
+
 app.use("/auth/", authRoutes)
 
-// Simplemente enviar una respuesta de error directamente sin usar AppError
+// Manejo de rutas no encontradas
 app.all("*", (req, res) => {
   res.status(404).json({
     status: "fail",
